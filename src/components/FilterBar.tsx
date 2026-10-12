@@ -1,6 +1,6 @@
 import { Button } from './ui/button.tsx';
-import { activeFilterAtom, type FilterKeys } from "@/atoms/taskFilters.ts";
-import {useAtom} from "jotai";
+import { activeFilterAtom, type FilterKeys } from '@/atoms/taskFilters.ts';
+import { useAtom } from 'jotai';
 
 export default function FilterBar() {
   const filters: {
@@ -13,7 +13,7 @@ export default function FilterBar() {
     { key: 'escalated', label: 'Escalated' },
   ];
 
-  const [activeFilter, setActiveFilter] = useAtom(activeFilterAtom)
+  const [activeFilter, setActiveFilter] = useAtom(activeFilterAtom);
 
   return (
     <div className="flex flex-wrap gap-2 mb-4">

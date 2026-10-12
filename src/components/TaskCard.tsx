@@ -1,9 +1,12 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForm } from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { birthdateSchema, type BirthdateFormValues } from "@/schemas/taskSchema.ts";
+import {
+  birthdateSchema,
+  type BirthdateFormValues,
+} from '@/schemas/taskSchema.ts';
 import { Button } from './ui/button.tsx';
 import { type Task, updateTask } from '../api/tasks.ts';
 import { Input } from './ui/input.tsx';
@@ -18,13 +21,13 @@ export default function TaskCard({
 }) {
   const {
     register,
-      handleSubmit,
-      formState: { errors, isSubmitting },
+    handleSubmit,
+    formState: { errors, isSubmitting },
   } = useForm<BirthdateFormValues>({
     resolver: zodResolver(birthdateSchema),
     defaultValues: {
-      birthdate: ''
-    }
+      birthdate: '',
+    },
   });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -106,7 +109,10 @@ export default function TaskCard({
           </span>
         </div>
       </div>
-      <form onSubmit={handleSubmit(saveBirthdate)} className="flex justify-between flex-wrap p-4 rounded-lg shadow-sm items-end">
+      <form
+        onSubmit={handleSubmit(saveBirthdate)}
+        className="flex justify-between flex-wrap p-4 rounded-lg shadow-sm items-end"
+      >
         <div className="flex flex-col items-start justify-start h-full">
           <Label htmlFor="birthdate" className="mb-3">
             Add missing birthdate information (DD.MM.YYYY)
@@ -116,14 +122,14 @@ export default function TaskCard({
             type="date"
             id="birthdate"
             aria-invalid={!!errors.birthdate}
-            aria-describedby={errors.birthdate ? "birthdate-error" : undefined}
+            aria-describedby={errors.birthdate ? 'birthdate-error' : undefined}
             placeholder="Add missing birthdate information"
-            {...register("birthdate")}
-            />
+            {...register('birthdate')}
+          />
           {errors.birthdate && (
-              <p id="birthdate-error" className="text-sm text-red-600 mt-1">
-                {errors.birthdate.message}
-              </p>
+            <p id="birthdate-error" className="text-sm text-red-600 mt-1">
+              {errors.birthdate.message}
+            </p>
           )}
         </div>
         <Button type="submit" disabled={mutation.isPending || isSubmitting}>
