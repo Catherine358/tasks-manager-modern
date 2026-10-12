@@ -1,6 +1,9 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { birthdateSchema, type BirthdateFormValues } from "@/schemas/taskSchema.ts";
 import { Button } from './ui/button.tsx';
 import { type Task, updateTask } from '../api/tasks.ts';
 import { Input } from './ui/input.tsx';
@@ -13,7 +16,16 @@ export default function TaskCard({
   task: Task;
   tasks: Task[];
 }) {
-  const [birthdate, setBirthdate] = useState<string>('');
+  const {
+    register,
+      handleSubmit,
+      formState: { errors, isSubmitting },
+  } = useForm<BirthdateFormValues>({
+    resolver: zodResolver(birthdateSchema),
+    defaultValues: {
+      birthdate: ''
+    }
+  });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -46,8 +58,8 @@ export default function TaskCard({
     [mutation, task, goToNextTask]
   );
 
-  const saveBirthdate = () => {
-    mutation.mutate({ id: task.id, data: { birthdate } });
+  const saveBirthdate = (values: BirthdateFormValues) => {
+    mutation.mutate({ id: task.id, data: { birthdate: values.birthdate } });
   };
 
   return (
@@ -94,7 +106,7 @@ export default function TaskCard({
           </span>
         </div>
       </div>
-      <div className="flex justify-between flex-wrap p-4 rounded-lg shadow-sm items-end">
+      <form onSubmit={handleSubmit(saveBirthdate)} className="flex justify-between flex-wrap p-4 rounded-lg shadow-sm items-end">
         <div className="flex flex-col items-start justify-start h-full">
           <Label htmlFor="birthdate" className="mb-3">
             Add missing birthdate information (DD.MM.YYYY)
@@ -103,15 +115,21 @@ export default function TaskCard({
             className="w-[90%]"
             type="date"
             id="birthdate"
+            aria-invalid={!!errors.birthdate}
+            aria-describedby={errors.birthdate ? "birthdate-error" : undefined}
             placeholder="Add missing birthdate information"
-            value={birthdate}
-            onChange={(e) => setBirthdate(e.target.value)}
-          />
+            {...register("birthdate")}
+            />
+          {errors.birthdate && (
+              <p id="birthdate-error" className="text-sm text-red-600 mt-1">
+                {errors.birthdate.message}
+              </p>
+          )}
         </div>
-        <Button disabled={mutation.isPending} onClick={saveBirthdate}>
-          {mutation.isPending ? 'Saving...' : 'Save'}
+        <Button type="submit" disabled={mutation.isPending || isSubmitting}>
+          {mutation.isPending || isSubmitting ? 'Saving...' : 'Save'}
         </Button>
-      </div>
+      </form>
       <div className="flex justify-between flex-wrap gap-3 mt-4">
         <Button
           onClick={() => updateStatus('done')}
